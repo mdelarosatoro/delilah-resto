@@ -10,6 +10,9 @@ const cors = require("cors");
 //puerto del servidor
 const PORT = 3000;
 
+//importar objeto de sequelize
+const sequelize = require("./conexion");
+
 //importar modelos
 const {
     Usuarios,
@@ -284,6 +287,7 @@ async (req, res) => {
             res.status(401).json({error: "compruebe email y/o contraseña."})
         } else {
             const token = jwt.sign({
+                id: posibleUsuario.id,
                 usuario: posibleUsuario.usuario,
                 correo: posibleUsuario.correo,
                 nombreApellido: posibleUsuario.nombreApellido
@@ -401,6 +405,137 @@ async (req, res) => {
     }
 });
 
+//POST crear un nuevo pedido
+server.post("/pedidos",
+async (req, res) => {
+    try {
+        const { platos, metodoPagoId } = req.body
+
+        const user = req.user;
+
+        const nuevoPedido = await Pedidos.create({
+            hora: Date(),
+        });
+
+        //relacionando el pedido con el id del usuario
+        await nuevoPedido.setUsuario(user.id);
+        //relacionando el pedido con el estado 'nuevo'
+        await nuevoPedido.setEstado(1);
+        //relacionando el pedido con el metodo de pago elegido en el frontend
+        await nuevoPedido.setMetodosPago(metodoPagoId);
+
+        //relacionar el pedido con cada plato y cantidad
+        for (const plato of platos) {
+            await nuevoPedido.addPlatos(plato.platoId);
+            
+            await pedidosHasPlatos.update({
+                cantidad: plato.cantidad
+            },
+            {
+                where: {
+                    pedidoId: nuevoPedido.id,
+                    platoId: plato.platoId
+                }
+            });
+        }
+
+        //actualizar el total
+        //primero debo buscar en la tabla pedidosHasPlatos, todos los platos del pedido actual
+        const platosPedidoActual = await pedidosHasPlatos.findAll({
+            where: {
+                pedidoId: nuevoPedido.id
+            }
+        });
+
+        // console.log(platosPedidoActual);
+        let totalPedido = 0;
+        
+        for (const plato of platosPedidoActual) {
+            const precioPlatoActual = await Platos.findOne({
+                attributes: ['precio'],
+                where: {
+                    id: plato.platoId
+                }
+            });
+            totalPedido += plato.cantidad * precioPlatoActual.dataValues.precio;
+        }
+        
+        totalPedido = Math.round(totalPedido*100) / 100;
+        
+        //guardar el total del pedido en la DB
+        await nuevoPedido.update({
+            total: totalPedido
+        }, {
+            where: {
+                id: nuevoPedido.id
+            }
+        })
+        
+        //armar la descripcion del pedido
+        let descripcion = [];
+
+        for (const plato of platos) {
+            const auxiliar = [];
+            auxiliar.push(`${plato.cantidad.toString()}X`);
+            const descripcionDB = await Platos.findOne({
+                attributes: ["nombre"],
+                where: {
+                    id: plato.platoId
+                }
+            });
+            const descripcionString = descripcionDB.dataValues.nombre;
+            auxiliar.push(`${descripcionString}`);
+            descripcion.push(auxiliar.join(" "));
+            console.log(descripcion);
+        }   
+
+        const result = descripcion.join(", ");
+        console.log(result);
+
+        await Pedidos.update({
+            descripcion: result,
+        },{
+            where: {
+                id: nuevoPedido.id
+            }
+        });
+
+
+        // console.log(nuevoPedido);
+
+        res.status(201).json(`Pedido generado correctamente con id ${nuevoPedido.id}.`);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//GET visualizar todos los pedidos
+server.get("/pedidos",
+validarAdministrador,
+async (req, res) => {
+    try {
+
+        const pedidos = await Pedidos.findAll({
+            attributes: ["id","hora", "descripcion", "total"],
+            include: [
+            {model: Usuarios,
+            attributes: ["nombreApellido", "correo", "telefono", "direccion"]},
+            {model: metodosPago,},
+            {model: Estados,},
+            // {
+            //     model: Platos,
+            //     through: { attributes: ["cantidad"] }
+            // }
+        ]
+        });
+
+        res.status(200).json(pedidos);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+})
 
 //levantar el servidor
 server.listen(PORT, () => {

@@ -10,11 +10,18 @@ const Pedidos = sequelize.define('pedidos', {
     },
     hora: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
+        defaultValue: sequelize.NOW
+    },
+    descripcion: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: ""
     },
     total: {
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 0
     },
 },
 {

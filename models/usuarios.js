@@ -35,7 +35,7 @@ const Usuarios = sequelize.define('usuarios', {
     isAdmin: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: false
+        defaultValue: true
     }
 },
 {

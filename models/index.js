@@ -8,7 +8,7 @@ const Pedidos = require("./pedidos");
 const Platos = require("./platos");
 
 Usuarios.hasMany(Pedidos, {
-    foreignKey: 'usuarios_id'
+    foreignKey: 'usuario_id'
 });
 Pedidos.belongsTo(Usuarios);
 
@@ -18,19 +18,19 @@ metodosPago.hasMany(Pedidos, {
 Pedidos.belongsTo(metodosPago);
 
 Estados.hasMany(Pedidos, {
-    foreignKey: 'estados_id'
+    foreignKey: 'estado_id'
 });
 Pedidos.belongsTo(Estados);
 
 const pedidosHasPlatos = sequelize.define('pedidosHasPlatos', {
-    pedidosId: {
+    pedidoId: {
         type: DataTypes.INTEGER,
         references: {
             model: Pedidos,
             key: 'id'
         }
     },
-    platosId: {
+    platoId: {
         type: DataTypes.INTEGER,
         references: {
             model: Platos,
@@ -39,7 +39,8 @@ const pedidosHasPlatos = sequelize.define('pedidosHasPlatos', {
     },
     cantidad: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true,
+        defaultValue: 0
     }
 },
 {
@@ -53,7 +54,7 @@ Pedidos.belongsToMany(Platos, { through: pedidosHasPlatos });
 
 // (async () => {
 //     try {
-//         await sequelize.sync();
+//         await sequelize.sync({force: true});
 //     } catch (error) { 
 //         console.error(error.message);
 //     }
