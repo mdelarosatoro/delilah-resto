@@ -51,13 +51,13 @@ const pedidosHasPlatos = sequelize.define('pedidosHasPlatos', {
 Platos.belongsToMany(Pedidos, { through: pedidosHasPlatos });
 Pedidos.belongsToMany(Platos, { through: pedidosHasPlatos });
 
-(async () => {
-    try {
-        await sequelize.sync();
-    } catch (error) { 
-        console.error(error.message);
-    }
-})();
+// (async () => {
+//     try {
+//         await sequelize.sync();
+//     } catch (error) { 
+//         console.error(error.message);
+//     }
+// })();
 
 module.exports = {
     Usuarios,

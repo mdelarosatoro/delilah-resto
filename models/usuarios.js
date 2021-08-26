@@ -2,6 +2,12 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../conexion");
 
 const Usuarios = sequelize.define('usuarios', {
+    id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+    },
     usuario: {
         type: DataTypes.STRING,
         allowNull: false
