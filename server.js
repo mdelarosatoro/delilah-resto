@@ -132,6 +132,14 @@ const validarTamanoContrasena = async (req, res, next) => {
     }
 }
 
+const validarCamposEmail = async (req, res, next) => {
+    next();
+}
+
+const validarCamposContrasena = async (req, res, next) => {
+    next();
+}
+
 //ENDPOINTS
 //registrar usuario
 server.post("/registrar",
@@ -167,7 +175,10 @@ async (req, res) => {
 });
 
 //login usuario
-server.post("/login", async (req, res) => {
+server.post("/login",
+validarCamposEmail,
+validarCamposContrasena,
+async (req, res) => {
     try {
         const { correo, contrasena } = req.body;
 
