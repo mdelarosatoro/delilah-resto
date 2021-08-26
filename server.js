@@ -133,11 +133,102 @@ const validarTamanoContrasena = async (req, res, next) => {
 }
 
 const validarCamposEmail = async (req, res, next) => {
-    next();
+    const { correo } = req.body;
+
+    if ( correo == "" || correo == null) {
+        res.status(400).json({error: `Debe introducir un correo electrónico.`})
+    } else if ( !correo.slice().split("").some(element => element === "@" )) {
+        res.status(400).json({error: `El correo que introdujo no contiene el símbolo '@'. Inténtelo nuevamente.`});
+    } else if ( !correo.slice().split("").some(element => element === "." )) {
+        res.status(400).json({error: `El correo que introdujo no contiene el símbolo '.'. Inténtelo nuevamente.`});
+    } else {
+        next();
+    }
 }
 
 const validarCamposContrasena = async (req, res, next) => {
-    next();
+    const { contrasena } = req.body;
+
+    if ( contrasena == "" || contrasena == null) {
+        res.status(400).json({error: `Debe introducir una contraseña.`})
+    } else {
+        next();
+    }
+}
+
+const validarCamposNuevoPlato = async (req, res, next) => {
+    const {
+        nombre,
+        precio,
+        imgUrl
+    } = req.body;
+
+    if (
+        nombre == "" || nombre == null ||
+        precio == "" || precio == null ||
+        imgUrl == "" || nombre == null
+    ) {
+        res.status(400).json({error: `Debe ingresar todos los campos. Intente nuevamente.`});
+    } else {
+        next();
+    }
+}
+
+const validarNuevoMetodoPago = async (req, res, next) => {
+    const { nombre } = req.body;
+
+    if ( nombre == "" || nombre == null ) {
+        res.status(400).json({error: `Debe ingresar un nombre para el nuevo método de pago.`});
+    } else {
+        const metodoExiste = await metodosPago.findOne({
+            where: {
+                nombre
+            }
+        });
+
+        if (metodoExiste) {
+            res.status(400).json({error: `Un método de pago con el nombre '${nombre}' ya existe. Intente con un nombre distinto.`});
+        } else {
+            next();
+        }
+    }
+}
+
+const validarNuevoEstado = async (req, res, next) => {
+    const { nombre } = req.body;
+
+    if ( nombre == "" || nombre == null ) {
+        res.status(400).json({error: `Debe ingresar un nombre para el nuevo método de pago.`});
+    } else {
+        const estadoExiste = await Estados.findOne({
+            where: {
+                nombre
+            }
+        });
+
+        if (estadoExiste) {
+            res.status(400).json({error: `Un estado con el nombre '${nombre}' ya existe. Intente con un nombre distinto.`});
+        } else {
+            next();
+        }
+    }
+}
+
+const validarAdministrador = async (req, res, next) => {
+    const usuario = req.user.usuario;
+
+    const userDB = await Usuarios.findOne({
+        attributes: ["is_admin"],
+        where: {
+            usuario
+        }
+    });
+
+    if (userDB.dataValues.is_admin == 0) {
+        res.status(400).json({error: `Usuario ${usuario} no es administrador.`});
+    } else {
+        next();
+    }
 }
 
 //ENDPOINTS
@@ -208,6 +299,107 @@ async (req, res) => {
     }
 });
 
+//POST crear un nuevo plato
+server.post("/platos",
+validarAdministrador,
+validarCamposNuevoPlato,
+async (req, res) => {
+    try {
+        const {
+            nombre,
+            precio,
+            imgUrl
+        } = req.body;
+    
+        const nuevoPlato = await Platos.create({
+            nombre,
+            precio,
+            imgUrl
+        });
+    
+        res.status(201).json(nuevoPlato);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//GET conseguir todos los platos
+server.get("/platos",
+async (req, res) => {
+    try {
+        const platos = await Platos.findAll({});
+
+        res.status(200).json(platos);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//POST crear un nuevo método de pago
+server.post("/metodos-pago",
+validarAdministrador,
+validarNuevoMetodoPago,
+async (req, res) => {
+    try {
+        const { nombre } = req.body;
+
+        const nuevoMetodo = await metodosPago.create({
+            nombre
+        });
+
+        res.status(201).json(nuevoMetodo);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//GET mostrar todos los métodos de pago
+server.get("/metodos-pago",
+async (req, res) => {
+    try {
+        const metodosArray = await metodosPago.findAll({});
+
+        res.status(200).json(metodosArray);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//POST crear un nuevo estado de pedido
+server.post("/estados",
+validarAdministrador,
+validarNuevoMetodoPago,
+async (req, res) => {
+    try {
+        const { nombre } = req.body;
+
+        const nuevoEstado = await Estados.create({
+            nombre
+        });
+
+        res.status(201).json(nuevoEstado);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//GET mostrar todos los estados de pedido
+server.get("/estados",
+async (req, res) => {
+    try {
+        const estadosArray = await Estados.findAll({});
+
+        res.status(200).json(estadosArray);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
 
 
 //levantar el servidor
