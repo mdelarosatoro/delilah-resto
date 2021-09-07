@@ -1,0 +1,418 @@
+{
+	"info": {
+		"_postman_id": "0b4dfc1b-135b-4966-968e-a5d272be2185",
+		"name": "Delilah Resto",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Registrar un nuevo usuario",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"usuario\": \"mdelarosatoroag\",\n    \"nombreApellido\": \"Max De La Rosa Toro\",\n    \"correo\": \"mdelarosatoroag@gmail.com\",\n    \"telefono\": \"+51 979 301 974\",\n    \"direccion\": \"Alameda Las Palmas 154, Urb. La Encantada de Villa, Chorrillos\",\n    \"contrasena\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/registrar",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"registrar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var headerValue = pm.response.json().token;",
+							"pm.environment.set(\"authToken\", headerValue);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"correo\": \"mdelarosatoroag@gmail.com\",\n    \"contrasena\": \"123456\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/login",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conseguir datos de usuario",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localBasedUrl}}/user-data",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"user-data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear un nuevo plato",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\": \"Helado\",\n    \"precio\": 9.20,\n    \"imgUrl\": \"https://gastronomiaycia.republica.com/wp-content/uploads/2011/07/clasificacion_helados.jpg\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/platos",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"platos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conseguir todos los platos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localBasedUrl}}/platos",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"platos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear un nuevo método de pago",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\": \"Tarjeta\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/metodos-pago",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"metodos-pago"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conseguir todos los métodos de pago Copy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localBasedUrl}}/metodos-pago",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"metodos-pago"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear un nuevo estado de pedido",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\": \"Nuevo\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/estados",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"estados"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conseguir todos los estados de pedido",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localBasedUrl}}/estados",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"estados"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear un nuevo pedido, enviando el carrito creado en el frontend",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"platos\": [\n    {\n        \"platoId\": 1,\n        \"cantidad\": 10\n    },\n    {\n        \"platoId\": 2,\n        \"cantidad\": 10\n    },\n    {\n        \"platoId\": 3,\n        \"cantidad\": 10\n    }\n],\n    \"metodoPagoId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/pedidos",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ver todos los pedidos en el sistema",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localBasedUrl}}/pedidos",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Toggle Plato en favoritos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"platoId\": 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/favoritos",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"favoritos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ver todos mis favoritos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localBasedUrl}}/favoritos",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"favoritos"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
