@@ -1,12 +1,12 @@
 # delilah-resto
-API para pedidos de restaurante utilizando Node.js, Express, Sequelize y MySQL2.
+API para pedidos de restaurante utilizando Node.js, Express, JWT, Sequelize y MySQL2.
 
 
 Para utilizar este repositorio, se debe utilizar la instrucción `npm install` para instalar todas las dependencias del proyecto.
 
 Para la base de datos, pueden utilizar un servidor MySQL como XAMPP o un servidor MYSQL remoto.
 
-Dependiendo de su configuración, deberán crear un archivo .env y reemplazar los datos que aparecen en el archivo .env.example con los datos de su entorno.
+Dependiendo de su configuración, deberán crear un archivo .env y reemplazar los datos de ejemplo eque aparecen en el archivo .env.example con los datos de su entorno.
 Una vez configurado el archivo .env con su configuración, correr el servidor con la siguiente instrucción:
 
 `nodemon server.js`
@@ -18,6 +18,8 @@ Una vez corriendo el servidor, utilizar la colección de postman para poder prob
 - Crear métodos de pago
 - Crear estados de pedido
 - Crear pedidos
+
+Los endpoints `/login` y `/registrar` son los únicos endpoints que no requieren un JWT para interactuar con el cliente. Para el resto, se debe registrar un nuevo usuario en la base de datos y luego hacer login con los datos correspondientes. El servidor enviará un JWT que será guardado en el localStorage del cliente. Para el resto de endpoints, será necesario enviar el siguiente header de autorización: `Authorization: 'Bearer token'`, en donde la palabra 'token' será reemplazada por el token guardado en localStorage. Los tokens expiran a los 30 minutos de su creación, por lo que deberá volver a loggearse al servidor para obtener un nuevo token luego de expirarse el antiguo.
 
 ## Instrucciones de uso:
 
