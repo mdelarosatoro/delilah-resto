@@ -32,6 +32,11 @@ const Usuarios = sequelize.define('usuarios', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    favoritos: {
+        type: DataTypes.JSON,
+        allowNull: false,
+        defaultValue: []
+    },
     isAdmin: {
         type: DataTypes.STRING,
         allowNull: false,

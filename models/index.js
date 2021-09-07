@@ -1,4 +1,3 @@
-const { DataTypes } = require("Sequelize");
 const sequelize = require("../conexion");
 
 const Usuarios = require("./usuarios");
@@ -6,51 +5,40 @@ const Estados = require("./estados");
 const metodosPago = require("./metodosPago");
 const Pedidos = require("./pedidos");
 const Platos = require("./platos");
+const pedidosHasPlatos = require("./pedidosHasPlatos");
 
+
+//Relaciones
+//Usuarios 1 y Pedidos muchos
 Usuarios.hasMany(Pedidos, {
     foreignKey: 'usuario_id'
 });
 Pedidos.belongsTo(Usuarios);
 
+//Métodos de pago 1 y pedidos muchos
 metodosPago.hasMany(Pedidos, {
     foreignKey: 'metodos_pago_id'
 });
 Pedidos.belongsTo(metodosPago);
 
+//Estado 1 y pedido muchos
 Estados.hasMany(Pedidos, {
     foreignKey: 'estado_id'
 });
 Pedidos.belongsTo(Estados);
 
-const pedidosHasPlatos = sequelize.define('pedidosHasPlatos', {
-    pedidoId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Pedidos,
-            key: 'id'
-        }
-    },
-    platoId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Platos,
-            key: 'id'
-        }
-    },
-    cantidad: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        defaultValue: 0
-    }
-},
-{
-    tableName: 'pedidos_has_platos',
-    underscored: true,
-    timestamps: false
-});
-
+//Pedidos muchos y platos muchos
 Platos.belongsToMany(Pedidos, { through: pedidosHasPlatos });
 Pedidos.belongsToMany(Platos, { through: pedidosHasPlatos });
+
+
+/*código para sincronizar las tablas en el servidor
+mysql con los modelos de sequelize
+Descomentarlo al realizar cambios en los modelos o sus relaciones.
+Esto borrará la base de datos y sincronizará los nuevos modelos y relaciones
+
+*Una vez sincronizado volverlo a comentar.
+*/
 
 // (async () => {
 //     try {

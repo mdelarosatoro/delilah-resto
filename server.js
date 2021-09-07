@@ -32,7 +32,7 @@ const server = express();
 //politica de limite de peticiones
 const limiter = rateLimit({
     windowMs: 10 * 1000,
-    max: 3,
+    max: 10,
     message: "Excediste el número de peticiones. Intenta más tarde."
 });
 
@@ -217,6 +217,22 @@ const validarNuevoEstado = async (req, res, next) => {
     }
 }
 
+const validarExistenciaPlato = async (req, res, next) => {
+    const { platoId } = req.body;
+
+    const platoDB = await Platos.findOne({
+        where: {
+            id: platoId
+        }
+    });
+
+    if (!platoDB) {
+        res.status(400).json({error: `Plato con id ${platoId} no existe en la DB.`});
+    } else {
+        next();
+    }
+}
+
 const validarAdministrador = async (req, res, next) => {
     const usuario = req.user.usuario;
 
@@ -297,6 +313,24 @@ async (req, res) => {
 
             res.status(200).json({token});
         }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: error.message});
+    }
+});
+
+//GET conseguir user-data
+server.get("/user-data", async (req, res) => {
+    try {
+        const { usuario } = req.user;
+    
+        const userDB = await Usuarios.findOne({
+            where: {
+                usuario
+            }
+        });
+        
+        res.status(200).json(userDB);
     } catch (error) {
         console.error(error);
         res.status(500).json({error: error.message});
@@ -523,10 +557,10 @@ async (req, res) => {
             attributes: ["nombreApellido", "correo", "telefono", "direccion"]},
             {model: metodosPago,},
             {model: Estados,},
-            // {
-            //     model: Platos,
-            //     through: { attributes: ["cantidad"] }
-            // }
+            {
+                model: Platos,
+                through: { attributes: ["cantidad"] }
+            }
         ]
         });
 
@@ -536,6 +570,95 @@ async (req, res) => {
         res.status(400).json({error: error.message});
     }
 })
+
+//POST agregar un plato a favoritos
+server.post("/favoritos",
+validarExistenciaPlato,
+async (req, res) => {
+    try {
+        const { platoId } = req.body;
+        const usuario = req.user.usuario;
+
+        const favoritosActual = await Usuarios.findOne({
+            attributes: ["favoritos"],
+            where: {
+                usuario
+            }
+        });
+
+        const favoritosArr = JSON.parse(favoritosActual.favoritos);
+
+        const index = favoritosArr.findIndex((favoritoId) => {
+            return favoritoId == platoId
+        });
+
+        //para solo poder agregar un plato una vez
+        if (index === -1) {
+            favoritosArr.push(platoId);
+        }
+
+        console.log(favoritosArr)
+
+        await Usuarios.update({
+            favoritos: favoritosArr
+        },{
+            where: {
+                usuario
+            }
+        })
+
+        res.status(200).json(JSON.stringify(favoritosArr));
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//GET Visualizar platos favoritos
+server.get("/favoritos",
+async (req, res) => {
+    try {
+        const usuario = req.user.usuario;
+    
+        const favoritosActual = await Usuarios.findOne({
+            attributes: ["favoritos"],
+            where: {
+                usuario
+            }
+        });
+    
+        const favoritosArr = JSON.parse(favoritosActual.favoritos);
+        const arrayDePlatos = [];
+    
+        //buscar cada plato en la base de datos y agregarlo a un array de objetos
+        for (const favorito of favoritosArr) {
+            console.log(favorito)
+            const platoActual = await Platos.findOne({
+                where: {
+                    id: favorito
+                }
+            });
+            
+            arrayDePlatos.push(platoActual.dataValues);
+        }
+
+        // console.log(arrayDePlatos);
+
+        res.status(200).json(arrayDePlatos);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+server.get("/test", async (req, res) => {
+    try {
+        res.status(200).json(`User verified.`);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
 
 //levantar el servidor
 server.listen(PORT, () => {
