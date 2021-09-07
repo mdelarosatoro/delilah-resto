@@ -592,9 +592,11 @@ async (req, res) => {
             return favoritoId == platoId
         });
 
-        //para solo poder agregar un plato una vez
+        //para solo poder agregar un plato una vez (toggle)
         if (index === -1) {
             favoritosArr.push(platoId);
+        } else {
+            favoritosArr.splice(index, 1);
         }
 
         console.log(favoritosArr)
@@ -650,6 +652,7 @@ async (req, res) => {
         res.status(400).json({error: error.message});
     }
 });
+
 
 server.get("/test", async (req, res) => {
     try {
