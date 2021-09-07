@@ -1,13 +1,16 @@
 const Sequelize = require("sequelize");
 
 //XAMPP
-const user = 'root';
-const pass = 'root';
-const host = 'localhost';
-const port = '3306';
-const dbName = 'delilah-resto';
+const {
+    DB_USER,
+    DB_HOST,
+    DB_PASS,
+    DB_NAME,
+    DB_PORT,
+    } = process.env;
 
-const conString = `mysql://${user}:${pass}@${host}:${port}/${dbName}`;
+const conString = `mysql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+console.log(conString);
 
 const sequelize = new Sequelize(conString);
 

@@ -6,9 +6,10 @@ const rateLimit = require("express-rate-limit");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 const cors = require("cors");
+require("dotenv").config();
 
 //puerto del servidor
-const PORT = 3000;
+const { SERVER_PORT } = process.env;
 
 //importar objeto de sequelize
 const sequelize = require("./conexion");
@@ -24,7 +25,7 @@ const {
 } = require("./models");
 
 //secret key
-const JWT_SECRET = 'Alg00o0oSupPPeRRComPl1C4D000DeDesCiFRar';
+const { JWT_SECRET } = process.env;
 
 //crear instancia del server en express
 const server = express();
@@ -664,7 +665,7 @@ server.get("/test", async (req, res) => {
 });
 
 //levantar el servidor
-server.listen(PORT, () => {
-    console.log(`Servidor inicializado correctamente en el puerto ${PORT}.`)
+server.listen(SERVER_PORT, () => {
+    console.log(`Servidor inicializado correctamente en el puerto ${SERVER_PORT}.`)
 });
 
