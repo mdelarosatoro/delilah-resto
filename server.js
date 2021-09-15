@@ -33,7 +33,7 @@ const server = express();
 //politica de limite de peticiones
 const limiter = rateLimit({
     windowMs: 10 * 1000,
-    max: 10,
+    max: 30,
     message: "Excediste el número de peticiones. Intenta más tarde."
 });
 
@@ -234,6 +234,43 @@ const validarExistenciaPlato = async (req, res, next) => {
     }
 }
 
+const validarExistenciaPedido = async (req, res, next) => {
+    try {
+        const { idPedido } = req.params;
+
+        const pedido = await Pedidos.findOne({
+            where: {
+                id: idPedido
+            }
+        });
+        
+        if (!pedido) {
+            res.status(401).json({error: `Pedido con id ${idPedido} no existe en la DB.`})
+        } else {
+            next();
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({error: `Inténtelo más tarde.`})
+    }
+}
+
+const validarExistenciaEstado = async (req, res, next) => {
+    const { idEstado } = req.body;
+
+    const posibleEstado = await Estados.findOne({
+        where: {
+            id: idEstado
+        }
+    });
+
+    if (!posibleEstado) {
+        res.status(401).json({error: `Estado con id ${idEstado} no existe en la DB.`})
+    } else {
+        next();
+    }
+}
+
 const validarAdministrador = async (req, res, next) => {
     const usuario = req.user.usuario;
 
@@ -359,7 +396,7 @@ async (req, res) => {
         res.status(201).json(nuevoPlato);
     } catch (error) {
         console.error(error.message);
-        res.status(400).json({error: error.message});
+        res.status(500).json({error: error.message});
     }
 });
 
@@ -521,11 +558,9 @@ async (req, res) => {
             const descripcionString = descripcionDB.dataValues.nombre;
             auxiliar.push(`${descripcionString}`);
             descripcion.push(auxiliar.join(" "));
-            console.log(descripcion);
         }   
 
         const result = descripcion.join(", ");
-        console.log(result);
 
         await Pedidos.update({
             descripcion: result,
@@ -571,6 +606,86 @@ async (req, res) => {
         res.status(400).json({error: error.message});
     }
 })
+
+server.get("/pedidos/:idPedido",
+validarAdministrador,
+async (req, res) => {
+    try {
+        const { idPedido } = req.params;
+
+        const pedido = await Pedidos.findOne({
+            attributes: ["id","hora", "descripcion", "total"],
+            where: {
+                id: idPedido
+            },
+            include: [
+            {model: Usuarios,
+            attributes: ["nombreApellido", "correo", "telefono", "direccion"]},
+            {model: metodosPago,},
+            {model: Estados,},
+            {
+                model: Platos,
+                through: { attributes: ["cantidad"] }
+            }
+        ]
+        });
+
+        res.status(200).json(pedido);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+server.put("/pedidos/:idPedido/estado",
+validarAdministrador,
+validarExistenciaPedido,
+validarExistenciaEstado,
+async (req, res) => {
+    try {
+        const { idPedido } = req.params;
+        const { idEstado } = req.body;
+
+        const pedido = await Pedidos.findOne({
+            where: {
+                id: idPedido
+            }
+        });
+        console.log(pedido);
+        await pedido.setEstado(idEstado);
+
+        res.status(200).json(`Pedido con id ${idPedido} cambiado a Estado con id ${idEstado} de forma exitosa.`);
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+server.get("/mis-pedidos", async (req, res) => {
+    try {
+        const { id } = req.user;
+
+        const pedidos = await Pedidos.findAll({
+            where: {
+                usuarioId: id
+            },
+            include: [
+                { model: metodosPago },
+                {model: Estados}
+            ]
+        });
+
+        if (pedidos.length == 0) {
+            res.status(200).json([]);
+        } else {
+            res.status(200).json(pedidos);
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
 
 //POST agregar un plato a favoritos
 server.post("/favoritos",
@@ -654,6 +769,11 @@ async (req, res) => {
     }
 });
 
+server.get("/admin-test",
+validarAdministrador,
+async (req, res) => {
+    res.status(200).json(`Success.`)
+});
 
 server.get("/test", async (req, res) => {
     try {

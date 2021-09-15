@@ -1,0 +1,802 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "description": "Documentación del API de Delilah Resto",
+        "version": "1.0.0",
+        "title": "API REST Delilah Resto",
+        "contact": {
+            "email": "mdelarosatoroag@gmail.com"
+        }
+    },
+    "servers": [{
+        "url": "http://localhost:3000"
+    }],
+    "tags": [{
+            "name": "platos",
+            "description": "Endpoints relacionados con platos"
+        },
+        {
+            "name": "auth",
+            "description": "Endpoints relacionados con autenticación y registro"
+        },
+        {
+            "name": "usuarios",
+            "description": "Endpoints relacionados con conseguir información de usuarios"
+        },
+        {
+            "name": "metodos-pago",
+            "description": "Endpoints relacionados con los métodos de pago"
+        },
+        {
+            "name": "estados",
+            "description": "Endpoints relacionados con los estados de pedido"
+        },
+        {
+            "name": "pedidos",
+            "description": "Endpoints relacionados con los pedidos"
+        }
+    ],
+    "paths": {
+        "/platos": {
+            "get": {
+                "summary": "Traer todos los platos disponibles",
+                "tags": [
+                    "platos"
+                ],
+                "security": [{
+                    "BearerAuth": [
+
+                    ]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Petición OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Plato"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Algo salió mal, inténtelo nuevamente."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Crear un nuevo plato",
+                "tags": ["platos"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PlatoBody"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nuevo plato creado satisfactoriamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Plato"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en payload",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BodyError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "Hacer login al sistema",
+                "tags": ["auth"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "correo": {
+                                        "type": "string",
+                                        "example": "example@gmail.com"
+                                    },
+                                    "contrasena": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Log In Correcto",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXN1YXJpbyI6Im1kZWxhcm9zYXRvcm9hZyIsImNvcnJlbyI6Im1kZWxhcm9zYXRvcm9hZ0BnbWFpbC5jb20iLCJub21icmVBcGVsbGlkbyI6Ik1heCBEZSBMYSBSb3NhIFRvcm8iLCJpYXQiOjE2MzE2NzQ2MjcsImV4cCI6MTYzMTY3ODIyN30.d_1vapB8mBrwLzV9TD3JKQl3CSAKq1voOIWYQFlQosc"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en usuario o contraseña",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BodyError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/registrar": {
+            "post": {
+                "summary": "Registrar un nuevo usuario en el sistema",
+                "tags": ["auth"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Usuario"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Registro satisfactorio",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Campos llenados incorrectamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BodyError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user-data": {
+            "get": {
+                "summary": "Conseguir la información del usuario loggeado",
+                "tags": ["usuarios"],
+                "security": [{"BearerAuth": []}],
+                "responses": {
+                    "200": {
+                        "description": "Petición OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/metodos-pago": {
+            "get": {
+                "summary": "Conseguir todos los métodos de pago",
+                "tags": ["metodos-pago"],
+                "security": [{"BearerAuth": []}],
+                "responses": {
+                    "200": {
+                        "description": "Petición OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MetodosPago"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Crear un nuevo método de pago",
+                "tags": ["metodos-pago"],
+                "security": [{"BearerAuth":[]}],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Efectivo"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nuevo método de pago creado satisfactoriamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetodosPago"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Campos llenados incorrectamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BodyError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/estados": {
+            "get": {
+                "summary": "Conseguir todos los estados de pedido",
+                "tags": ["estados"],
+                "security": [{"BearerAuth": []}],
+                "responses": {
+                    "200": {
+                        "description": "Petición OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Estado"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Crear un nuevo estado de pedido",
+                "tags": ["estados"],
+                "security": [{"BearerAuth":[]}],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Preparando"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nuevo estado de pedido creado satisfactoriamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Estado"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Campos llenados incorrectamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BodyError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pedidos": {
+            "get": {
+                "summary": "Traer todos los pedidos del sistema (admin)",
+                "tags": ["pedidos"],
+                "security": [{"BearerAuth":[]}],
+                "responses": {
+                    "200": {
+                        "description": "Petición OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Pedido"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Crear un nuevo pedido",
+                "tags": ["pedidos"],
+                "security": [{"BearerAuth":[]}],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "platos": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "platoId": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cantidad": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "metodoPagoId": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pedido creado satisfactoriamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Pedido generado correctamente con id 32."
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Campos llenados incorrectamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BodyError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/favoritos": {
+            "get": {
+                "summary": "Traer todos los favoritos del usuario loggeado",
+                "tags": ["usuarios"],
+                "security": [{"BearerAuth":[]}],
+                "responses": {
+                    "200": {
+                        "description": "Petición OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Plato"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Toggle un plato favorito",
+                "tags": ["usuarios"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "platoId": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Favorito toggleado satisfactoriamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "[1]"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Campos llenados incorrectamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BodyError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Plato": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Calzone"
+                    },
+                    "precio": {
+                        "type": "number",
+                        "example": 29.99
+                    },
+                    "imgUrl": {
+                        "type": "string",
+                        "example": "http://www.sampleimages.com/2"
+                    }
+                }
+            },
+            "PlatoBody": {
+                "type": "object",
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "example": "Calzone"
+                    },
+                    "precio": {
+                        "type": "number",
+                        "example": 29.99
+                    },
+                    "imgUrl": {
+                        "type": "string",
+                        "example": "http://www.sampleimages.com/2"
+                    }
+                }
+            },
+            "Usuario": {
+                "type": "object",
+                "properties": {
+                    "usuario": {
+                        "type": "string",
+                        "example": "elonmusk123"
+                    },
+                    "nombreApellido": {
+                        "type": "string",
+                        "example": "Elon Musk"
+                    },
+                    "correo": {
+                        "type": "string",
+                        "example": "emusk@gmail.com"
+                    },
+                    "telefono": {
+                        "type": "string",
+                        "example": "+52 923 023 920"
+                    },
+                    "direccion": {
+                        "type": "string",
+                        "example": "Calle Las Grojillas 123"
+                    },
+                    "contrasena": {
+                        "type": "string",
+                        "example": "123456"
+                    }
+                }
+            },
+            "MetodosPago": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Efectivo"
+                    }
+                }
+            },
+            "Estado": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Preparando"
+                    }
+                }
+            },
+            "Pedido": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "2"
+                    },
+                    "hora": {
+                        "type": "string",
+                        "example": "2021-09-09T12:08:09.000Z"
+                    },
+                    "descripcion": {
+                        "type": "string",
+                        "example": "2X CheeseBurger"
+                    },
+                    "total": {
+                        "type": "number",
+                        "example": 40
+                    },
+                    "usuario": {
+                        "type": "object",
+                        "properties": {
+                            "nombreApellido": {
+                                "type": "string",
+                                "example": "Elon Musk"
+                            },
+                            "correo": {
+                                "type": "string",
+                                "example": "emusk@gmail.com"
+                            },
+                            "telefono": {
+                                "type": "string",
+                                "example": "+43 432 654 321"
+                            },
+                            "direccion": {
+                                "type": "string",
+                                "example": "Calle Las Grojillas 123"
+                            }
+                        }
+                    },
+                    "metodosPago": {
+                        "$ref": "#/components/schemas/MetodosPago"
+                    },
+                    "estado": {
+                        "$ref": "#/components/schemas/Estado"
+                    },
+                    "platos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Plato"
+                        }
+                    }
+                }
+            },
+            "ServError": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "example": "Algo salió mal, inténtelo nuevamente."
+                    }
+                }
+            },
+            "BodyError": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "example": "Error en algún campo."
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}
