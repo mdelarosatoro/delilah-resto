@@ -663,8 +663,38 @@ async (req, res) => {
     }
 });
 
+//GET visualizar todos los pedidos del usuario loggeado
+server.get("/pedidos", async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const pedidos = await Pedidos.findAll({
+            attributes: ["id","hora", "descripcion", "total"],
+            include: [
+                {
+                    model: Usuarios,
+                    attributes: ["nombreApellido", "correo", "telefono", "direccion"],
+                    where: {
+                        id: userId
+                    }
+                },
+                {model: metodosPago,},
+                {model: Estados,},
+                {
+                    model: Platos,
+                    through: { attributes: ["cantidad"] }
+                }
+            ]
+        });
+        res.status(200).json(pedidos);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
 //GET visualizar todos los pedidos
-server.get("/pedidos",
+server.get("/pedidos/all",
 validarAdministrador,
 async (req, res) => {
     try {
