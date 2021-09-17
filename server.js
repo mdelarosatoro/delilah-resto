@@ -164,7 +164,7 @@ const validarCamposNuevoPlato = async (req, res, next) => {
     const {
         nombre,
         precio,
-        imgUrl
+        imgUrl,
     } = req.body;
 
     if (
@@ -173,6 +173,16 @@ const validarCamposNuevoPlato = async (req, res, next) => {
         imgUrl == "" || nombre == null
     ) {
         res.status(400).json({error: `Debe ingresar todos los campos. Intente nuevamente.`});
+    } else {
+        next();
+    }
+}
+
+const validarCamposPlatoActivo = (req, res, next) => {
+    const { activo } = req.body;
+
+    if (!(activo == true || activo == false)) {
+        res.status(400).json({error: `Debe ingresar un estado correcto (true o false)`})
     } else {
         next();
     }
@@ -219,7 +229,7 @@ const validarNuevoEstado = async (req, res, next) => {
 }
 
 const validarExistenciaPlato = async (req, res, next) => {
-    const { platoId } = req.body;
+    const platoId = req.body.platoId || req.params.idPlato;
 
     const platoDB = await Platos.findOne({
         where: {
@@ -407,6 +417,79 @@ async (req, res) => {
         const platos = await Platos.findAll({});
 
         res.status(200).json(platos);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//GET conseguir un plato por id
+server.get("/platos/:idPlato",
+validarExistenciaPlato,
+async (req, res) => {
+    try {
+        const { idPlato } = req.params;
+        const plato = await Platos.findOne({
+            where: {
+                id: idPlato
+            }
+        })
+
+        res.status(200).json(plato);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//PUT actualizar un plato por id
+server.put("/platos/:idPlato",
+validarAdministrador,
+validarExistenciaPlato,
+validarCamposNuevoPlato,
+async (req, res) => {
+    try {
+        const { idPlato } = req.params;
+        const { nombre, precio, imgUrl } = req.body;
+
+        const platoDB = await Platos.update({
+            nombre,
+            precio,
+            imgUrl
+        },
+        {
+            where: {
+                id: idPlato
+            }
+        });
+
+        res.status(200).json(`Plato con id ${idPlato} actualizado correctamente.`);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//PUT activar o desactivar un plato
+server.put("/platos/:idPlato/estado",
+validarAdministrador,
+validarExistenciaPlato,
+validarCamposPlatoActivo,
+async (req, res) => {
+    try {
+        const { idPlato } = req.params;
+        const { activo } = req.body;
+
+        Platos.update({
+            activo
+        },
+        {
+            where: {
+                id: idPlato
+            }
+        });
+
+        res.status(200).json(`Plato con id ${idPlato} cambiado a estado ${activo?"activo":"desactivado"}`);
     } catch (error) {
         console.error(error.message);
         res.status(400).json({error: error.message});
