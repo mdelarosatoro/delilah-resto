@@ -6,6 +6,7 @@ const rateLimit = require("express-rate-limit");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 //puerto del servidor
@@ -23,6 +24,9 @@ const {
     Platos,
     pedidosHasPlatos
 } = require("./models");
+
+//password hashing rounds
+const saltRounds = 10;
 
 //secret key
 const { JWT_SECRET } = process.env;
@@ -104,7 +108,7 @@ const validarUsuarioUnico = async (req, res, next) => {
     });
 
     if (posibleUsuario) {
-        res.status(400).json({error: `Usuario ${usuario} ya existe. Pruebe con otro.`});
+        res.status(400).json({error: `Usuario '${usuario}' ya existe. Pruebe con otro.`});
     } else {
         next();
     }
@@ -344,17 +348,20 @@ async (req, res) => {
             direccion,
             contrasena
         } = req.body;
-    
-        const nuevoUsuario = await Usuarios.create({
-            usuario,
-            nombreApellido,
-            correo,
-            telefono,
-            direccion,
-            contrasena
+
+        //password hashing
+        bcrypt.hash(contrasena, saltRounds, async function(err, hash) {
+            const nuevoUsuario = await Usuarios.create({
+                usuario,
+                nombreApellido,
+                correo,
+                telefono,
+                direccion,
+                contrasena: hash
+            });
+
+            res.status(201).json(nuevoUsuario);
         });
-    
-        res.status(201).json(nuevoUsuario);
     } catch (error) {
         console.error(error.message);
         res.status(500).json({error: `Ocurrió un error. Vuevlve a intentarlo.`})
@@ -371,24 +378,33 @@ async (req, res) => {
 
         const posibleUsuario = await Usuarios.findOne({
             where: {
-                correo,
-                contrasena
+                correo
             }
         });
 
+        
         if (!posibleUsuario) {
-            res.status(401).json({error: "compruebe email y/o contraseña."})
+            res.status(401).json({error: "compruebe email y/o contraseña."});
         } else {
-            const token = jwt.sign({
-                id: posibleUsuario.id,
-                usuario: posibleUsuario.usuario,
-                correo: posibleUsuario.correo,
-                nombreApellido: posibleUsuario.nombreApellido
-            },
-            JWT_SECRET,
-            { expiresIn: "60m" });
+            const hash = posibleUsuario.contrasena;
+    
+            bcrypt.compare(contrasena, hash, function(err, result) {
+                if (!result) {
+                    res.status(401).json({error: "compruebe email y/o contraseña."});
+                } else {
+                    const token = jwt.sign({
+                        id: posibleUsuario.id,
+                        usuario: posibleUsuario.usuario,
+                        correo: posibleUsuario.correo,
+                        nombreApellido: posibleUsuario.nombreApellido
+                    },
+                    JWT_SECRET,
+                    { expiresIn: "60m" });
+        
+                    res.status(200).json({token});
+                }
+            });
 
-            res.status(200).json({token});
         }
     } catch (error) {
         console.error(error);
