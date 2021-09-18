@@ -13,11 +13,11 @@ Una vez configurado el archivo .env con su configuración, correr el servidor co
 
 Una vez corriendo el servidor, utilizar la colección de postman para poder probar los endpoints. Podrán ejectuar las siguientes funcionalidades sobre la base de datos:
 
-- Crear usuarios
-- Crear platos
-- Crear métodos de pago
-- Crear estados de pedido
-- Crear pedidos
+- Crear y editar usuarios
+- Crear y editar platos
+- Crear y editar métodos de pago
+- Crear y editar estados de pedido
+- Crear y editar pedidos
 
 Los endpoints `/login` y `/registrar` son los únicos endpoints que no requieren un JWT para interactuar con el cliente. Para el resto, se debe registrar un nuevo usuario en la base de datos y luego hacer login con los datos correspondientes. El servidor enviará un JWT que será guardado en el localStorage del cliente. Para el resto de endpoints, será necesario enviar el siguiente header de autorización: `Authorization: 'Bearer token'`, en donde la palabra 'token' será reemplazada por el token guardado en localStorage. Los tokens expiran a los 30 minutos de su creación, por lo que deberá volver a loggearse al servidor para obtener un nuevo token luego de expirarse el antiguo.
 
