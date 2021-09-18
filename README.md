@@ -37,8 +37,9 @@ Para poder registrar un usuario, deberá enviar un JSON con el siguiente formato
 }
 ```
 
-3. Ingresar a la base de datos y cambiar el valor del campo `is_admin` a `1`.
-4. Hacer login con el usuario creado a través del endpoint `/login`
+3. Ingresar a la base de datos y cambiar el valor del campo `is_admin` a `1` en la tabla `usuarios` del usuario recién registrado.
+
+5. Hacer login con el usuario creado a través del endpoint `/login`
 
 Para hacer login, deberá enviar un JSON con el siguiente formato:
 ```json
