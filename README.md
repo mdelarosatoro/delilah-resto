@@ -85,10 +85,10 @@ Para crear un nuevo pedido, deberá estar loggeado en cualquier usuario y enviar
 ```json
 {
     "platos": [
-    {
-        "platoId": 1,
-        "cantidad": 1
-    }
+        {
+            "platoId": 1,
+            "cantidad": 1
+        }
 ],
     "metodoPagoId": 1
 }
