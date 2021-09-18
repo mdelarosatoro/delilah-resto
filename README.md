@@ -4,7 +4,7 @@ API para pedidos de restaurante utilizando Node.js, Express, JWT, Sequelize y My
 
 Para utilizar este repositorio, se debe utilizar la instrucción `npm install` para instalar todas las dependencias del proyecto.
 
-Para la base de datos, pueden utilizar un servidor MySQL como XAMPP o un servidor MYSQL remoto.
+Para la base de datos, pueden utilizar un servidor MySQL como XAMPP o un servidor MySQL remoto.
 
 Dependiendo de su configuración, deberán crear un archivo .env y reemplazar los datos de ejemplo eque aparecen en el archivo .env.example con los datos de su entorno.
 Una vez configurado el archivo .env con su configuración, correr el servidor con la siguiente instrucción:
