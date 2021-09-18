@@ -89,7 +89,7 @@ Para crear un nuevo pedido, deberá estar loggeado en cualquier usuario y enviar
             "platoId": 1,
             "cantidad": 1
         }
-],
+    ],
     "metodoPagoId": 1
 }
 ```
