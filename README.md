@@ -75,7 +75,7 @@ Para crear un nuevo método de pago, deberá estar loggeado en una cuenta de adm
 Para crear un nuevo estado de pedido, deberá estar loggeado en una cuenta de administrador y enviar un objeto JSON con este formato:
 ```json
 {
-    "nombre": "En preparación",
+    "nombre": "Nuevo",
 }
 ```
 
@@ -109,14 +109,14 @@ Indicando el id generado automáticamente por la base de datos. Luego, el admini
     "descripcion": "1X Calzone",
     "total": 40,
     "usuario": {
-        "nombreApellido": "Max De La Rosa Toro",
-        "correo": "mdelarosatoroag@gmail.com",
-        "telefono": "+51 979 391 974",
-        "direccion": "Alameda Las Palmas 154, Urb. La Encantada de Villa, Chorrillos"
+        "nombreApellido": "Test User",
+        "correo": "test@test.com",
+        "telefono": "+99 999 999 999",
+        "direccion": "Test Street 123"
     },
     "metodosPago": {
         "id": 1,
-        "nombre": "Credit Card"
+        "nombre": "Efectivo"
     },
     "estado": {
         "id": 1,
