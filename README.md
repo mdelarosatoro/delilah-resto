@@ -6,7 +6,7 @@ Para utilizar este repositorio, se debe utilizar la instrucción `npm install` p
 
 Para la base de datos, pueden utilizar un servidor MySQL como XAMPP o un servidor MySQL remoto.
 
-Dependiendo de su configuración, deberán crear un archivo `.env` y reemplazar los datos de ejemplo eque aparecen en el archivo .env.example con los datos de su entorno.
+Dependiendo de su configuración, deberán crear un archivo `.env` y reemplazar los datos de ejemplo eque aparecen en el archivo `.env.example` con los datos de su entorno.
 Una vez configurado el archivo .env con su configuración, correr el servidor con la siguiente instrucción:
 
 `nodemon server.js`
