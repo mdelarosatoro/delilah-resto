@@ -26,13 +26,13 @@ Los endpoints `/login` y `/registrar` son los únicos endpoints que no requieren
 1. Crear un usuario a través del endpoint POST `/registrar`.
 
 Para poder registrar un usuario, deberá enviar un JSON con el siguiente formato:
-`{\
-    "usuario": "test",\
-    "nombreApellido": "Test User",\
-    "correo": "test@test.com",\
-    "telefono": "+99 999 999 999",\
-    "direccion": "Test Street 123",\
-    "contrasena": "123456"\
+`{\. 
+    "usuario": "test",  
+    "nombreApellido": "Test User",  
+    "correo": "test@test.com",  
+    "telefono": "+99 999 999 999",  
+    "direccion": "Test Street 123",  
+    "contrasena": "123456"  
 }`
 
 3. Ingresar a la base de datos y cambiar el valor del campo `is_admin` a `1`.
