@@ -19,7 +19,7 @@ Una vez corriendo el servidor, utilizar la colección de postman para poder prob
 - Crear y editar estados de pedido
 - Crear y editar pedidos
 
-Los endpoints `/login` y `/registrar` son los únicos endpoints que no requieren un JWT para interactuar con el cliente. Para el resto, se debe registrar un nuevo usuario en la base de datos y luego hacer login con los datos correspondientes. El servidor enviará un JWT que será guardado en el localStorage del cliente. Para el resto de endpoints, será necesario enviar el siguiente header de autorización: `Authorization: 'Bearer token'`, en donde la palabra 'token' será reemplazada por el token guardado en localStorage. Los tokens expiran a los 30 minutos de su creación, por lo que deberá volver a loggearse al servidor para obtener un nuevo token luego de expirarse el antiguo.
+Los endpoints `/login` y `/registrar` son los únicos endpoints que no requieren un JWT Authorization Header para interactuar. Para el resto, se debe registrar un nuevo usuario en la base de datos y luego hacer login con los datos correspondientes. El servidor enviará un JWT que será guardado en el localStorage del cliente. Para el resto de endpoints, será necesario enviar el siguiente header de autorización: `Authorization: 'Bearer token'`, en donde la palabra 'token' será reemplazada por el token guardado en localStorage. Los tokens expiran a los 30 minutos de su creación, por lo que deberá volver a loggearse al servidor para obtener un nuevo token luego de expirarse el antiguo.
 
 ## Instrucciones de uso:
 
