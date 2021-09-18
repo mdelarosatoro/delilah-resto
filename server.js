@@ -228,6 +228,35 @@ const validarNuevoEstado = async (req, res, next) => {
     }
 }
 
+const validarCamposNuevoPedido = async (req, res, next) => {
+    const { platos, metodoPagoId } = req.body;
+
+    for (const plato of platos) {
+        const platoDB = await Platos.findOne({
+            where: {
+                id: plato.platoId,
+                activo: true
+            }
+        });
+    
+        if (!platoDB) {
+            res.status(400).json({error: `Plato activo con id ${plato.platoId} no existe en la DB.`});
+        }
+    }
+
+    const metodoDB = await metodosPago.findOne({
+        where: {
+            id: metodoPagoId
+        }
+    })
+
+    if (!metodoDB) {
+        res.status(400).json({error: `Metodo de pago con id ${metodoPagoId} no existe en la DB.`});
+    }
+
+    next();
+}
+
 const validarExistenciaPlato = async (req, res, next) => {
     const platoId = req.body.platoId || req.params.idPlato;
 
@@ -550,7 +579,7 @@ async (req, res) => {
 //POST crear un nuevo estado de pedido
 server.post("/estados",
 validarAdministrador,
-validarNuevoMetodoPago,
+validarNuevoEstado,
 async (req, res) => {
     try {
         const { nombre } = req.body;
@@ -581,6 +610,7 @@ async (req, res) => {
 
 //POST crear un nuevo pedido
 server.post("/pedidos",
+validarCamposNuevoPedido,
 async (req, res) => {
     try {
         const { platos, metodoPagoId } = req.body
@@ -686,6 +716,7 @@ async (req, res) => {
 server.put("/pedidos/:idPedido",
 validarAdministrador,
 validarExistenciaPedido,
+validarCamposNuevoPedido,
 async (req, res) => {
     try {
         const { idPedido } = req.params;
@@ -842,8 +873,10 @@ async (req, res) => {
     }
 })
 
+//conseguir pedido por id
 server.get("/pedidos/:idPedido",
 validarAdministrador,
+validarExistenciaPedido,
 async (req, res) => {
     try {
         const { idPedido } = req.params;
@@ -997,4 +1030,3 @@ server.get("/test", async (req, res) => {
 server.listen(SERVER_PORT, () => {
     console.log(`Servidor inicializado correctamente en el puerto ${SERVER_PORT}.`)
 });
-
