@@ -411,10 +411,29 @@ async (req, res) => {
 });
 
 //GET conseguir todos los platos
-server.get("/platos",
+server.get("/platos/all",
+validarAdministrador,
 async (req, res) => {
     try {
         const platos = await Platos.findAll({});
+
+        res.status(200).json(platos);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
+//GET conseguir todos los platos activos (usuario no admin)
+server.get("/platos",
+validarAdministrador,
+async (req, res) => {
+    try {
+        const platos = await Platos.findAll({
+            where: {
+                activo: true
+            }
+        });
 
         res.status(200).json(platos);
     } catch (error) {
@@ -663,8 +682,111 @@ async (req, res) => {
     }
 });
 
+//PUT modificar pedido por id
+server.put("/pedidos/:idPedido",
+validarAdministrador,
+validarExistenciaPedido,
+async (req, res) => {
+    try {
+        const { idPedido } = req.params;
+        const { platos, metodoPagoId } = req.body;
+
+        const pedido = await Pedidos.findOne({
+            where: {
+                id: idPedido
+            }
+        });
+
+        pedido.setMetodosPago(metodoPagoId);
+
+        await pedidosHasPlatos.destroy({
+            where: {
+                pedidoId: idPedido
+            }
+        });
+
+        for (const plato of platos) {
+            await pedido.addPlatos(plato.platoId);
+            
+            await pedidosHasPlatos.update({
+                cantidad: plato.cantidad
+            },
+            {
+                where: {
+                    pedidoId: idPedido,
+                    platoId: plato.platoId
+                }
+            });
+        }
+
+        //actualizar el total
+        //primero debo buscar en la tabla pedidosHasPlatos, todos los platos del pedido actual
+        const platosPedidoActual = await pedidosHasPlatos.findAll({
+            where: {
+                pedidoId: idPedido
+            }
+        });
+
+        // console.log(platosPedidoActual);
+        let totalPedido = 0;
+        
+        for (const plato of platosPedidoActual) {
+            const precioPlatoActual = await Platos.findOne({
+                attributes: ['precio'],
+                where: {
+                    id: plato.platoId
+                }
+            });
+            totalPedido += plato.cantidad * precioPlatoActual.dataValues.precio;
+        }
+        
+        totalPedido = Math.round(totalPedido*100) / 100;
+        
+        //guardar el total del pedido en la DB
+        await Pedidos.update({
+            total: totalPedido
+        }, {
+            where: {
+                id: idPedido
+            }
+        })
+        
+        //armar la descripcion del pedido
+        let descripcion = [];
+
+        for (const plato of platos) {
+            const auxiliar = [];
+            auxiliar.push(`${plato.cantidad.toString()}X`);
+            const descripcionDB = await Platos.findOne({
+                attributes: ["nombre"],
+                where: {
+                    id: plato.platoId
+                }
+            });
+            const descripcionString = descripcionDB.dataValues.nombre;
+            auxiliar.push(`${descripcionString}`);
+            descripcion.push(auxiliar.join(" "));
+        }   
+
+        const result = descripcion.join(", ");
+
+        await Pedidos.update({
+            descripcion: result
+        },{
+            where: {
+                id: idPedido
+            }
+        });
+
+        res.status(201).json(`Pedido con id ${idPedido} actualizado correctamente.`);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+});
+
 //GET visualizar todos los pedidos del usuario loggeado
-server.get("/pedidos", async (req, res) => {
+server.get("/mis-pedidos", async (req, res) => {
     try {
         const userId = req.user.id;
 
@@ -764,36 +886,9 @@ async (req, res) => {
                 id: idPedido
             }
         });
-        console.log(pedido);
         await pedido.setEstado(idEstado);
 
         res.status(200).json(`Pedido con id ${idPedido} cambiado a Estado con id ${idEstado} de forma exitosa.`);
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).json({error: error.message});
-    }
-});
-
-server.get("/mis-pedidos", async (req, res) => {
-    try {
-        const { id } = req.user;
-
-        const pedidos = await Pedidos.findAll({
-            where: {
-                usuarioId: id
-            },
-            include: [
-                { model: metodosPago },
-                {model: Estados}
-            ]
-        });
-
-        if (pedidos.length == 0) {
-            res.status(200).json([]);
-        } else {
-            res.status(200).json(pedidos);
-        }
     } catch (error) {
         console.error(error.message);
         res.status(400).json({error: error.message});
@@ -866,16 +961,17 @@ async (req, res) => {
             console.log(favorito)
             const platoActual = await Platos.findOne({
                 where: {
-                    id: favorito
+                    id: favorito,
+                    activo: true
                 }
             });
             
-            arrayDePlatos.push(platoActual.dataValues);
+            platoActual && arrayDePlatos.push(platoActual.dataValues);
         }
 
         // console.log(arrayDePlatos);
 
-        res.status(200).json(arrayDePlatos);
+        res.status(200).json(arrayDePlatos.length > 0?arrayDePlatos:`No tiene platos añadidos en favoritos.`);
     } catch (error) {
         console.error(error.message);
         res.status(400).json({error: error.message});
