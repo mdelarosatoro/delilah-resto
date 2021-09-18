@@ -23,12 +23,35 @@ Los endpoints `/login` y `/registrar` son los únicos endpoints que no requieren
 
 ## Instrucciones de uso:
 
-1. Crear un usuario a través del endpoint `/registrar`.
-2. Ingresar a la base de datos y cambiar el valor del campo `is_admin` a `1`.
-3. Hacer login con el usuario creado a través del endpoint `/login`
-4. Crear varios platos, incluyendo url de imagen, precio y nombre a través del endpoint `platos`.
-5. Crear diversos métodos de pago a través del respectivo endpoint `/metodos-pago`
-6. Crear estados de pedido necesarios a través del respectivo endpoint `/estados`
-7. Crear un pedido indicando el id de cada plato y su cantidad, además del id del método de pago al final a través del endpoint `/pedidos`
+1. Crear un usuario a través del endpoint POST `/registrar`.
 
-Este repositorio es puramente un backend programado en Nodejs con Express. Para conectarlo a un frontend se utilizaría el Fetch API de JavaScript para realizar los HTTP requests pertinentes al servidor y poder pintar la data en el frontend.
+Para poder registrar un usuario, deberá enviar un JSON con el siguiente formato:
+`{
+    "usuario": "test",
+    "nombreApellido": "Test User",
+    "correo": "test@test.com",
+    "telefono": "+99 999 999 999",
+    "direccion": "Test Street 123",
+    "contrasena": "123456"
+}`
+
+3. Ingresar a la base de datos y cambiar el valor del campo `is_admin` a `1`.
+4. Hacer login con el usuario creado a través del endpoint `/login`
+
+Para hacer login, deberá enviar un JSON con el siguiente formato:
+`{
+    "correo": "test@test.com",
+    "contrasena": "123456" 
+}`
+
+El servidor responderá con un JSON Web Token, el cual deberá guardar y enviar como Authorization Header en posteriores requests a cualquier endpoint protegido. Según el tipo de endpoint, algunos validarán si el usuario es administrador para poder acceder, como los de editar pedidos y platos.
+
+6. Crear varios platos, incluyendo url de imagen, precio y nombre a través del endpoint `/platos`.
+
+8. Crear diversos métodos de pago a través del respectivo endpoint `/metodos-pago`
+
+10. Crear estados de pedido necesarios a través del respectivo endpoint `/estados`
+
+12. Crear un pedido indicando el id de cada plato y su cantidad, además del id del método de pago al final a través del endpoint `/pedidos`
+
+Este repositorio es puramente un backend programado en Nodejs con Express. Para conectarlo a un frontend se utilizaría el Fetch API de JavaScript o una librería como Axios para realizar los HTTP requests pertinentes al servidor y poder pintar la data en el frontend.
