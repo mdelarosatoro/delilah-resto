@@ -54,7 +54,7 @@ SERVER_PORT=1111
 8. El servidor de node y la base de datos están conectadas satisfactoriamente y se puede proseguir a ingresar datos en la DB.
 
 
-### Uso del API
+### Uso del API - Ingresar datos
 
 1. Crear un usuario a través del endpoint POST `/registrar`.
 
