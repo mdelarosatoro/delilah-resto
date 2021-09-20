@@ -47,9 +47,11 @@ SERVER_PORT=1111
     }
 })();
 ```
-6. Descomentar el código entre las líneas 43 y 49 del archivo `index.js`, abrir la terminal y correr el comando `nodemon server.js`. El código descomentado sincronizará todos los modelos con la base de datos. Volver a comentar el código, ya que de otra forma cada vez que se realice un cambio en el código volver a limpiar toda la base de datos.
+6. Descomentar el código entre las líneas 43 y 49 del archivo `index.js`, abrir la terminal y correr el comando `nodemon server.js`. El código descomentado sincronizará todos los modelos con la base de datos.
 
-7. El servidor de node y la base de datos están conectadas satisfactoriamente y se puede proseguir a ingresar datos en la DB.
+7. Volver a comentar el código, ya que de otra forma cada vez que se realice un cambio en el código volver a limpiar toda la base de datos. Cada vez que se quiera realizar algún cambio en los modelos, se tendrá que volver a correr el código del paso 5 para reestructurar y limpiar la base de datos.
+
+8. El servidor de node y la base de datos están conectadas satisfactoriamente y se puede proseguir a ingresar datos en la DB.
 
 
 ### Uso del API
