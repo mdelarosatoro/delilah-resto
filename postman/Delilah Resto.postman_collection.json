@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0b4dfc1b-135b-4966-968e-a5d272be2185",
+		"_postman_id": "ef96eca5-b264-4c08-9d7c-95951c0e25dc",
 		"name": "Delilah Resto",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -157,6 +157,99 @@
 					],
 					"path": [
 						"platos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conseguir todos los platos activos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "Conseguir plato por id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar plato por id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/platos/2",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"platos",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cambiar estado de plato",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"activo\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/platos/1/estado",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"platos",
+						"1",
+						"estado"
 					]
 				}
 			},
@@ -321,6 +414,80 @@
 						"pedidos"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "Editar datos de pedido por id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localBasedUrl}}/pedidos/1",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"pedidos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cambiar estado de un pedido por id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{localBasedUrl}}/pedidos/1/estado",
+					"host": [
+						"{{localBasedUrl}}"
+					],
+					"path": [
+						"pedidos",
+						"1",
+						"estado"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conseguir un pedido por id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "Conseguir pedidos del usuario loggeado",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
 			},
 			"response": []
 		},
