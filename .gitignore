@@ -1,3 +1,4 @@
 delilah_exports
 node_modules
 .env
+swagger.json
