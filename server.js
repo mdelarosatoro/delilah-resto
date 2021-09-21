@@ -461,7 +461,7 @@ validarAdministrador,
 async (req, res) => {
     try {
         const platos = await Platos.findAll({});
-
+        
         res.status(200).json(platos);
     } catch (error) {
         console.error(error.message);
@@ -828,7 +828,7 @@ async (req, res) => {
         res.status(201).json(`Pedido con id ${idPedido} actualizado correctamente.`);
     } catch (error) {
         console.error(error.message);
-        res.status(400).json({error: error.message});
+        res.status(500).json({error: error.message});
     }
 });
 
