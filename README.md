@@ -1,5 +1,5 @@
 # delilah-resto
-API para pedidos de restaurante utilizando Node.js, Express, JWT, Sequelize y MySQL2.
+API para pedidos de restaurante utilizando Node.js, Express, JWT, Bcrypt, Sequelize y MySQL2.
 
 
 Para la base de datos, pueden utilizar un servidor MySQL como XAMPP o un servidor MySQL remoto.
