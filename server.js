@@ -516,7 +516,7 @@ async (req, res) => {
         const { idPlato } = req.params;
         const { nombre, precio, imgUrl } = req.body;
 
-        const platoDB = await Platos.update({
+        await Platos.update({
             nombre,
             precio,
             imgUrl
@@ -943,6 +943,36 @@ async (req, res) => {
         res.status(400).json({error: error.message});
     }
 });
+
+//DELETE: Pedido isActive = false
+server.delete("/pedidos/:idPedido",
+validarAdministrador,
+validarExistenciaPedido,
+async (req, res) => {
+    try {
+        const { idPedido } = req.params;
+
+        const pedido = await Pedidos.findOne({
+            where: {
+                id: idPedido
+            }
+        })
+
+        await Pedidos.update({
+            isActive: !pedido.isActive,
+        },
+        {
+            where: {
+                id: idPedido
+            }
+        });
+
+        res.status(200).json(`Pedido con id ${idPedido} actualizado correctamente a ( isActive : ${!pedido.isActive} ).`)
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json({error: error.message});
+    }
+})
 
 //POST agregar un plato a favoritos
 server.post("/favoritos",

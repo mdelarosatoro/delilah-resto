@@ -23,6 +23,11 @@ const Pedidos = sequelize.define('pedidos', {
         allowNull: false,
         defaultValue: 0
     },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 1
+    }
 },
 {
     tableName: 'pedidos',
